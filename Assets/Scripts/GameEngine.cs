@@ -258,8 +258,9 @@ public class GameEngine : MonoBehaviour
 			Vector3 acceleration = Input.acceleration;
 			num = acceleration.x;
 
-			// keyboard controls
-			float horizontalAxis = Input.GetAxis("Horizontal");
+            // keyboard controls
+            float horizontalAxis = Input.GetAxis("Horizontal");
+			horizontalAxis = horizontalAxis / 2.5f;
             num = horizontalAxis;
         }
 		Vector3 a = new Vector3(num * leftRightMultiplier, 0f, upMovement);
@@ -268,7 +269,7 @@ public class GameEngine : MonoBehaviour
 
 	private void PlayerShooting()
 	{
-		if (Input.GetButton("Fire1") && Time.time - shootTime > shootRate)
+		if ((Input.GetButton("Fire1") || Input.GetButton("Jump")) && Time.time - shootTime > shootRate)
 		{
 			Vector3 b = new Vector3(0f, missileYOffset, 0f);
 			Object.Instantiate(missile, player.transform.position + b, missile.transform.rotation);
