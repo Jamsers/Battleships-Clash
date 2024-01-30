@@ -257,7 +257,11 @@ public class GameEngine : MonoBehaviour
 		{
 			Vector3 acceleration = Input.acceleration;
 			num = acceleration.x;
-		}
+
+			// keyboard controls
+			float horizontalAxis = Input.GetAxis("Horizontal");
+            num = horizontalAxis;
+        }
 		Vector3 a = new Vector3(num * leftRightMultiplier, 0f, upMovement);
 		gameSpace.transform.position = gameSpace.transform.position + a * Time.deltaTime;
 	}
