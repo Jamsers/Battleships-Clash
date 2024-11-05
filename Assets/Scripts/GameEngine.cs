@@ -127,7 +127,8 @@ public class GameEngine : MonoBehaviour
 
 	private void Update()
 	{
-		if (isGamePaused == 2)
+        PauseKey();
+        if (isGamePaused == 2)
 		{
 			Spawner();
 		}
@@ -303,6 +304,36 @@ public class GameEngine : MonoBehaviour
 			shootTime = Time.time;
 		}
 	}
+
+	bool pauseCooldown = false;
+
+	private void PauseKey()
+	{
+		if (pauseCooldown == true)
+			return;
+
+        if (Input.GetButton("Cancel"))
+		{
+			if (isGamePaused == 0)
+			{
+				PauseGame();
+				pauseCooldown = true;
+				StartCoroutine("removePauseCooldown");
+            }
+            else if (isGamePaused == 1)
+            {
+                ResumeGame();
+                pauseCooldown = true;
+                StartCoroutine("removePauseCooldown");
+            }
+		}
+	}
+
+	IEnumerator removePauseCooldown()
+	{
+        yield return new WaitForSecondsRealtime(0.3f);
+        pauseCooldown = false;
+    }
 
 	private void Spawner()
 	{
