@@ -340,6 +340,9 @@ public class GameEngine : MonoBehaviour
             }
             else if (isGamePaused == 1)
             {
+                if (!PauseDefaultButton.isActiveAndEnabled)
+                    return;
+
                 ResumeGame();
                 pauseCooldown = true;
                 StartCoroutine("removePauseCooldown");
