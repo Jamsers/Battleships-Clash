@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameEngine : MonoBehaviour
 {
@@ -115,7 +116,8 @@ public class GameEngine : MonoBehaviour
 
 	private void Start()
 	{
-		shootTime = Time.time;
+		SetFullscreen(false);
+        shootTime = Time.time;
 		spawnTime = Time.time;
 		scoreTime = Time.time;
 		music = GetComponent<AudioSource>();
@@ -139,6 +141,14 @@ public class GameEngine : MonoBehaviour
 			}
 		}
 	}
+
+	public void SetFullscreen(bool isFullscreen)
+	{
+		if (isFullscreen && Screen.fullScreen == false)
+            StartCoroutine("SetFullScreen");
+		else if (!isFullscreen && Screen.fullScreen == true)
+            Screen.SetResolution(1024, 768, false);
+    }
 
 	public void AddToScore(int enemyType)
 	{
@@ -375,4 +385,20 @@ public class GameEngine : MonoBehaviour
 		Vector3 b = new Vector3(x, y, z);
 		Object.Instantiate(boat, boat.transform.position + b, boat.transform.rotation);
 	}
+
+    IEnumerator SetFullScreen()
+    {
+        Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, false);
+
+        yield return new WaitForSeconds(0.01f);
+
+        int interval = 3;
+        float ratio = (float)Screen.currentResolution.width / (float)Screen.currentResolution.height;
+        float lerp = (float)interval / 3f;
+        float origwidth = Mathf.Lerp(522 * ratio, Screen.currentResolution.width, lerp);
+        float origheight = Mathf.Lerp(522, Screen.currentResolution.height, lerp);
+        int width = Mathf.CeilToInt(origwidth);
+        int height = Mathf.CeilToInt(origheight);
+        Screen.SetResolution(width, height, true);
+    }
 }
