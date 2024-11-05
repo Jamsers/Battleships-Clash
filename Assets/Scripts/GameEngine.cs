@@ -38,7 +38,9 @@ public class GameEngine : MonoBehaviour
 
 	public GameObject creditScreen;
 
-	public GameObject pauseMenu;
+    public GameObject helpScreen;
+
+    public GameObject pauseMenu;
 
 	public GameObject playMenu;
 
@@ -116,7 +118,7 @@ public class GameEngine : MonoBehaviour
 
 	private void Start()
 	{
-		SetFullscreen(false);
+		SetFullscreen(Screen.fullScreen);
         shootTime = Time.time;
 		spawnTime = Time.time;
 		scoreTime = Time.time;
@@ -224,7 +226,21 @@ public class GameEngine : MonoBehaviour
 		creditScreen.gameObject.SetActive(value: true);
 	}
 
-	private void ShowHighScore()
+    private void HelpScreen()
+    {
+        pauseMenu.gameObject.SetActive(value: false);
+        helpScreen.gameObject.SetActive(value: true);
+    }
+
+    private void ToggleFullscreen()
+    {
+        if (Screen.fullScreen == false)
+            SetFullscreen(true);
+        else
+            SetFullscreen(false);
+    }
+
+    private void ShowHighScore()
 	{
 		pauseMenu.gameObject.SetActive(value: false);
 		highScoreScreen.gameObject.SetActive(value: true);
@@ -237,7 +253,8 @@ public class GameEngine : MonoBehaviour
 	private void BackToPause()
 	{
 		creditScreen.gameObject.SetActive(value: false);
-		pauseMenu.gameObject.SetActive(value: true);
+        helpScreen.gameObject.SetActive(value: false);
+        pauseMenu.gameObject.SetActive(value: true);
 	}
 
 	private void BackToPauseFromHighScore()
