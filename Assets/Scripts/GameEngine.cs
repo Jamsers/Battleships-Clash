@@ -116,9 +116,16 @@ public class GameEngine : MonoBehaviour
 
 	public GameObject newHighScore;
 
-	private void Start()
+    public Button CreditsDefaultButton;
+    public Button HighScoreDefaultButton;
+    public Button PauseDefaultButton;
+    public Button PlayDefaultButton;
+    public Button GameOverDefaultButton;
+    public Button ControlsDefaultButton;
+
+    private void Start()
 	{
-		SetFullscreen(Screen.fullScreen);
+        PauseDefaultButton.Select();
         shootTime = Time.time;
 		spawnTime = Time.time;
 		scoreTime = Time.time;
@@ -182,7 +189,8 @@ public class GameEngine : MonoBehaviour
 		isGamePaused = 1;
 		Time.timeScale = 0f;
 		music.Pause();
-	}
+        PauseDefaultButton.Select();
+    }
 
 	private void ResumeGame()
 	{
@@ -195,7 +203,8 @@ public class GameEngine : MonoBehaviour
 		{
 			startButtonText.SetActive(value: false);
 			resumeButtonText.SetActive(value: true);
-		}
+			isFirstStart = false;
+        }
 	}
 
 	public void GameOver()
@@ -219,18 +228,21 @@ public class GameEngine : MonoBehaviour
 			PlayerPrefs.SetInt("Sub Score", subScore);
 			PlayerPrefs.Save();
 		}
-	}
+        GameOverDefaultButton.Select();
+    }
 
 	private void ShowCredit()
 	{
 		pauseMenu.gameObject.SetActive(value: false);
 		creditScreen.gameObject.SetActive(value: true);
-	}
+        CreditsDefaultButton.Select();
+    }
 
     private void HelpScreen()
     {
         pauseMenu.gameObject.SetActive(value: false);
         helpScreen.gameObject.SetActive(value: true);
+        ControlsDefaultButton.Select();
     }
 
     private void ToggleFullscreen()
@@ -249,20 +261,23 @@ public class GameEngine : MonoBehaviour
 		boatScoreText.text = PlayerPrefs.GetInt("Boat Score", 0).ToString();
 		subScoreText.text = PlayerPrefs.GetInt("Sub Score", 0).ToString();
 		highScoreText.text = PlayerPrefs.GetInt("Score", 0).ToString();
-	}
+        HighScoreDefaultButton.Select();
+    }
 
 	private void BackToPause()
 	{
 		creditScreen.gameObject.SetActive(value: false);
         helpScreen.gameObject.SetActive(value: false);
         pauseMenu.gameObject.SetActive(value: true);
-	}
+        PauseDefaultButton.Select();
+    }
 
 	private void BackToPauseFromHighScore()
 	{
 		highScoreScreen.gameObject.SetActive(value: false);
 		pauseMenu.gameObject.SetActive(value: true);
-	}
+        PauseDefaultButton.Select();
+    }
 
 	private void ExitGame()
 	{
@@ -297,7 +312,7 @@ public class GameEngine : MonoBehaviour
 
 	private void PlayerShooting()
 	{
-		if ((Input.GetButton("Fire1") || Input.GetButton("Jump")) && Time.time - shootTime > shootRate)
+		if (Input.GetButton("Fire1") && Time.time - shootTime > shootRate)
 		{
 			Vector3 b = new Vector3(0f, missileYOffset, 0f);
 			Object.Instantiate(missile, player.transform.position + b, missile.transform.rotation);
@@ -310,6 +325,9 @@ public class GameEngine : MonoBehaviour
 	private void PauseKey()
 	{
 		if (pauseCooldown == true)
+			return;
+
+		if (isFirstStart)
 			return;
 
         if (Input.GetButton("Cancel"))
