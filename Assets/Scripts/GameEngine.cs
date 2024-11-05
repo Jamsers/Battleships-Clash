@@ -292,7 +292,7 @@ public class GameEngine : MonoBehaviour
 			Vector3 position3 = spawnBox.transform.position;
 			float z = position3.z;
 			Vector3 localScale3 = spawnBox.transform.localScale;
-			spawnBoxTopEdge = z + localScale3.z * 0.5f;
+			spawnBoxTopEdge = z + localScale3.z * 1.0f;
 			Vector3 position4 = spawnBox.transform.position;
 			spawnBoxHeight = position4.y;
 			float num = UnityEngine.Random.Range(0, 100);
