@@ -289,7 +289,9 @@ public class GameEngine : MonoBehaviour
 		UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
 	}
 
-	private void PlayerMovement()
+	float horizontalAxis = 0.0f;
+
+    private void PlayerMovement()
 	{
 		float num;
 		if (isGamePaused == 2)
@@ -301,10 +303,10 @@ public class GameEngine : MonoBehaviour
 			Vector3 acceleration = Input.acceleration;
 			num = acceleration.x;
 
-            // keyboard controls
-            float horizontalAxis = Input.GetAxis("Horizontal");
-			horizontalAxis = horizontalAxis / 2.5f;
-            num = horizontalAxis;
+			// keyboard controls
+			horizontalAxis = Mathf.MoveTowards(horizontalAxis, Input.GetAxis("Horizontal"), 3f * Time.deltaTime);
+			float divvedHorizontalAxis = horizontalAxis / 2.5f;
+            num = divvedHorizontalAxis;
         }
 		Vector3 a = new Vector3(num * leftRightMultiplier, 0f, upMovement);
 		gameSpace.transform.position = gameSpace.transform.position + a * Time.deltaTime;
