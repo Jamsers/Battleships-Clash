@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameEngine : MonoBehaviour
 {
@@ -37,7 +38,9 @@ public class GameEngine : MonoBehaviour
 
 	public GameObject creditScreen;
 
-	public GameObject pauseMenu;
+    public GameObject helpScreen;
+
+    public GameObject pauseMenu;
 
 	public GameObject playMenu;
 
@@ -113,9 +116,17 @@ public class GameEngine : MonoBehaviour
 
 	public GameObject newHighScore;
 
-	private void Start()
+    public Button CreditsDefaultButton;
+    public Button HighScoreDefaultButton;
+    public Button PauseDefaultButton;
+    public Button PlayDefaultButton;
+    public Button GameOverDefaultButton;
+    public Button ControlsDefaultButton;
+
+    private void Start()
 	{
-		shootTime = Time.time;
+        PauseDefaultButton.Select();
+        shootTime = Time.time;
 		spawnTime = Time.time;
 		scoreTime = Time.time;
 		music = GetComponent<AudioSource>();
@@ -123,7 +134,8 @@ public class GameEngine : MonoBehaviour
 
 	private void Update()
 	{
-		if (isGamePaused == 2)
+        PauseKey();
+        if (isGamePaused == 2)
 		{
 			Spawner();
 		}
@@ -139,6 +151,14 @@ public class GameEngine : MonoBehaviour
 			}
 		}
 	}
+
+	public void SetFullscreen(bool isFullscreen)
+	{
+		if (isFullscreen && Screen.fullScreen == false)
+            StartCoroutine("SetFullScreen");
+		else if (!isFullscreen && Screen.fullScreen == true)
+            Screen.SetResolution(1024, 768, false);
+    }
 
 	public void AddToScore(int enemyType)
 	{
@@ -169,7 +189,8 @@ public class GameEngine : MonoBehaviour
 		isGamePaused = 1;
 		Time.timeScale = 0f;
 		music.Pause();
-	}
+        PauseDefaultButton.Select();
+    }
 
 	private void ResumeGame()
 	{
@@ -182,7 +203,8 @@ public class GameEngine : MonoBehaviour
 		{
 			startButtonText.SetActive(value: false);
 			resumeButtonText.SetActive(value: true);
-		}
+			isFirstStart = false;
+        }
 	}
 
 	public void GameOver()
@@ -206,15 +228,32 @@ public class GameEngine : MonoBehaviour
 			PlayerPrefs.SetInt("Sub Score", subScore);
 			PlayerPrefs.Save();
 		}
-	}
+        GameOverDefaultButton.Select();
+    }
 
 	private void ShowCredit()
 	{
 		pauseMenu.gameObject.SetActive(value: false);
 		creditScreen.gameObject.SetActive(value: true);
-	}
+        CreditsDefaultButton.Select();
+    }
 
-	private void ShowHighScore()
+    private void HelpScreen()
+    {
+        pauseMenu.gameObject.SetActive(value: false);
+        helpScreen.gameObject.SetActive(value: true);
+        ControlsDefaultButton.Select();
+    }
+
+    private void ToggleFullscreen()
+    {
+        if (Screen.fullScreen == false)
+            SetFullscreen(true);
+        else
+            SetFullscreen(false);
+    }
+
+    private void ShowHighScore()
 	{
 		pauseMenu.gameObject.SetActive(value: false);
 		highScoreScreen.gameObject.SetActive(value: true);
@@ -222,19 +261,23 @@ public class GameEngine : MonoBehaviour
 		boatScoreText.text = PlayerPrefs.GetInt("Boat Score", 0).ToString();
 		subScoreText.text = PlayerPrefs.GetInt("Sub Score", 0).ToString();
 		highScoreText.text = PlayerPrefs.GetInt("Score", 0).ToString();
-	}
+        HighScoreDefaultButton.Select();
+    }
 
 	private void BackToPause()
 	{
 		creditScreen.gameObject.SetActive(value: false);
-		pauseMenu.gameObject.SetActive(value: true);
-	}
+        helpScreen.gameObject.SetActive(value: false);
+        pauseMenu.gameObject.SetActive(value: true);
+        PauseDefaultButton.Select();
+    }
 
 	private void BackToPauseFromHighScore()
 	{
 		highScoreScreen.gameObject.SetActive(value: false);
 		pauseMenu.gameObject.SetActive(value: true);
-	}
+        PauseDefaultButton.Select();
+    }
 
 	private void ExitGame()
 	{
@@ -246,7 +289,9 @@ public class GameEngine : MonoBehaviour
 		UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
 	}
 
-	private void PlayerMovement()
+	float horizontalAxis = 0.0f;
+
+    private void PlayerMovement()
 	{
 		float num;
 		if (isGamePaused == 2)
@@ -258,10 +303,10 @@ public class GameEngine : MonoBehaviour
 			Vector3 acceleration = Input.acceleration;
 			num = acceleration.x;
 
-            // keyboard controls
-            float horizontalAxis = Input.GetAxis("Horizontal");
-			horizontalAxis = horizontalAxis / 2.5f;
-            num = horizontalAxis;
+			// keyboard controls
+			horizontalAxis = Mathf.MoveTowards(horizontalAxis, Input.GetAxis("Horizontal"), 3f * Time.deltaTime);
+			float divvedHorizontalAxis = horizontalAxis / 2.5f;
+            num = divvedHorizontalAxis;
         }
 		Vector3 a = new Vector3(num * leftRightMultiplier, 0f, upMovement);
 		gameSpace.transform.position = gameSpace.transform.position + a * Time.deltaTime;
@@ -269,13 +314,49 @@ public class GameEngine : MonoBehaviour
 
 	private void PlayerShooting()
 	{
-		if ((Input.GetButton("Fire1") || Input.GetButton("Jump")) && Time.time - shootTime > shootRate)
+		if (Input.GetButton("Fire1") && Time.time - shootTime > shootRate)
 		{
 			Vector3 b = new Vector3(0f, missileYOffset, 0f);
 			Object.Instantiate(missile, player.transform.position + b, missile.transform.rotation);
 			shootTime = Time.time;
 		}
 	}
+
+	bool pauseCooldown = false;
+
+	private void PauseKey()
+	{
+		if (pauseCooldown == true)
+			return;
+
+		if (isFirstStart)
+			return;
+
+        if (Input.GetButton("Cancel"))
+		{
+			if (isGamePaused == 0)
+			{
+				PauseGame();
+				pauseCooldown = true;
+				StartCoroutine("removePauseCooldown");
+            }
+            else if (isGamePaused == 1)
+            {
+                if (!PauseDefaultButton.isActiveAndEnabled)
+                    return;
+
+                ResumeGame();
+                pauseCooldown = true;
+                StartCoroutine("removePauseCooldown");
+            }
+		}
+	}
+
+	IEnumerator removePauseCooldown()
+	{
+        yield return new WaitForSecondsRealtime(0.3f);
+        pauseCooldown = false;
+    }
 
 	private void Spawner()
 	{
@@ -292,7 +373,7 @@ public class GameEngine : MonoBehaviour
 			Vector3 position3 = spawnBox.transform.position;
 			float z = position3.z;
 			Vector3 localScale3 = spawnBox.transform.localScale;
-			spawnBoxTopEdge = z + localScale3.z * 0.5f;
+			spawnBoxTopEdge = z + localScale3.z * 1.0f;
 			Vector3 position4 = spawnBox.transform.position;
 			spawnBoxHeight = position4.y;
 			float num = UnityEngine.Random.Range(0, 100);
@@ -375,4 +456,20 @@ public class GameEngine : MonoBehaviour
 		Vector3 b = new Vector3(x, y, z);
 		Object.Instantiate(boat, boat.transform.position + b, boat.transform.rotation);
 	}
+
+    IEnumerator SetFullScreen()
+    {
+        Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, false);
+
+        yield return new WaitForSeconds(0.01f);
+
+        int interval = 3;
+        float ratio = (float)Screen.currentResolution.width / (float)Screen.currentResolution.height;
+        float lerp = (float)interval / 3f;
+        float origwidth = Mathf.Lerp(522 * ratio, Screen.currentResolution.width, lerp);
+        float origheight = Mathf.Lerp(522, Screen.currentResolution.height, lerp);
+        int width = Mathf.CeilToInt(origwidth);
+        int height = Mathf.CeilToInt(origheight);
+        Screen.SetResolution(width, height, true);
+    }
 }
