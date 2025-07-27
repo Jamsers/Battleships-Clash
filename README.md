@@ -30,7 +30,7 @@ To build the Windows installer:
 
 ## License
 
-This project is dual-licensed.
+Unless explicitly stated otherwise within the [**`ATTRIBUTION`**](ATTRIBUTION) file or directly alongside specific files/folders, the following licenses apply:
 
 **Code:** Licensed under the MIT license.  
 [![MIT license](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE-CODE)
@@ -39,3 +39,11 @@ This project is dual-licensed.
 [![CC BY 4.0 license](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg?style=for-the-badge)](LICENSE-ASSETS)
 
 Please refer to the respective license files for full details.
+
+## Credits
+
+**Code:** Developed by [**John James Gutib**](https://github.com/Jamsers).
+
+**Assets:** Designed and created by [**Christopher James Gutib**](https://cj18yearsold.wixsite.com/webportfolio).
+
+Please refer to the [**`ATTRIBUTION`**](ATTRIBUTION) file for full details.
