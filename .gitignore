@@ -6,7 +6,7 @@
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
-/[Bb]uild/
+#/[Bb]uild/
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
@@ -100,3 +100,7 @@ InitTestScene*.unity*
 
 # Include the source apk for decompilation
 !/Decompilation/Battleships Clash_1.1.apk
+
+# Export folders
+Build/battleships-clash-windows/*
+!Build/battleships-clash-windows/.itch.toml
